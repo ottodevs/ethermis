@@ -1,0 +1,26 @@
+package: github.com/alanchchen/ethermis
+import:
+- package: github.com/ethereum/go-ethereum
+  version: ~1.5.0
+  subpackages:
+  - cmd/utils
+  - common
+  - core
+  - core/state
+  - core/types
+  - eth
+  - ethdb
+  - event
+  - logger
+  - logger/glog
+  - node
+  - p2p
+  - params
+  - pow
+  - rpc
+- package: gopkg.in/urfave/cli.v1
+- package: gopkg.in/tylerb/graceful.v1
+  version: ~1.2.13
+- package: github.com/go-openapi/runtime
+- package: github.com/docker/go-units
+  version: ~0.3.1

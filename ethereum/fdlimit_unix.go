@@ -16,7 +16,7 @@
 
 // +build linux darwin netbsd openbsd solaris
 
-package utils
+package ethereum
 
 import "syscall"
 

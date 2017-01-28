@@ -18,7 +18,8 @@ import:
   - params
   - pow
   - rpc
-- package: gopkg.in/urfave/cli.v1
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
 - package: gopkg.in/tylerb/graceful.v1
   version: ~1.2.13
 - package: github.com/go-openapi/runtime

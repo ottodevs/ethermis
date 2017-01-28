@@ -1,5 +1,5 @@
-hash: abe3578f7f080dbb30b74b26c9f3fa6941e49664fb34f5cb65ed301ff66da465
-updated: 2017-01-28T09:29:58.666955748+08:00
+hash: 8bde8af7828d99735bcdab1b2a7efa0cfd20bed6b9ab096bbdab16bf14afe2ce
+updated: 2017-01-28T10:03:12.247930254+08:00
 imports:
 - name: github.com/aristanetworks/goarista
   version: b0e49c238c066506cefd63181b73b282ccd84708
@@ -60,6 +60,8 @@ imports:
   - rpc
   - trie
   - whisper/whisperv2
+- name: github.com/fsnotify/fsnotify
+  version: a904159b9206978bb6d53fcc7a769e5cd726c737
 - name: github.com/go-openapi/analysis
   version: d5a75b7d751ca3f11ad5d93cfe97405f2c3f6a47
 - name: github.com/go-openapi/errors
@@ -99,6 +101,17 @@ imports:
   version: 0a025b7e63adc15a622f29b0b2c4c3848243bbf6
   subpackages:
   - simplelru
+- name: github.com/hashicorp/hcl
+  version: db4f0768927a665a06c32855186e1bc762bcc8f5
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
 - name: github.com/huin/goupnp
   version: 679507af18f3c7ba2bcc7905392ce23e148661c3
   subpackages:
@@ -108,8 +121,12 @@ imports:
   - scpd
   - soap
   - ssdp
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jackpal/go-nat-pmp
   version: 1fa385a6f45828c83361136b45b1a21a12139493
+- name: github.com/magiconair/properties
+  version: b3b15ef068fd0b17ddf408a23669f20811d194d2
 - name: github.com/mailru/easyjson
   version: edd3ef1dab48f1cc831d78c0602a79be7a7b1a5e
   subpackages:
@@ -120,6 +137,10 @@ imports:
   version: db1efb556f84b25a0a13a04aad883943538ad2e0
 - name: github.com/pborman/uuid
   version: a97ce2ca70fa5a848076093f05e639a89ca34d06
+- name: github.com/pelletier/go-buffruneio
+  version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
+- name: github.com/pelletier/go-toml
+  version: a1f048ba24490f9b0674a67e1ce995d685cddf4a
 - name: github.com/PuerkitoBio/purell
   version: 0bcb03f4b4d0a9428594752bd2a3b9aa0a9d4bd4
 - name: github.com/PuerkitoBio/urlesc
@@ -143,8 +164,20 @@ imports:
   version: a62a804a8a009876ca59105f7899938a1349f4b3
 - name: github.com/rs/xhandler
   version: ed27b6fd65218132ee50cd95f38474a3d8a2cd12
+- name: github.com/spf13/afero
+  version: 72b31426848c6ef12a7a8e216708cb0d1530f074
+  subpackages:
+  - mem
+- name: github.com/spf13/cast
+  version: 56a7ecbeb18dde53c6db4bd96b541fd9741b8d44
+- name: github.com/spf13/cobra
+  version: c29ece4386f74084680e5e6d02d7b943ae630f63
+- name: github.com/spf13/jwalterweatherman
+  version: fa7ca7e836cf3a8bb4ebf799f472c12d7e903d66
 - name: github.com/spf13/pflag
   version: a9a634f3de0a7529baded7ad6b0c7467d5c6eca7
+- name: github.com/spf13/viper
+  version: 5ed0fc31f7f453625df314d8e66b9791e8d13003
 - name: github.com/syndtr/goleveldb
   version: 23851d93a2292dcc56e71a18ec9e0624d84a0f65
   subpackages:
@@ -177,6 +210,10 @@ imports:
   - html/charset
   - idna
   - websocket
+- name: golang.org/x/sys
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  subpackages:
+  - unix
 - name: golang.org/x/text
   version: ece019dcfd29abcf65d0d1dfe145e8faad097640
   subpackages:

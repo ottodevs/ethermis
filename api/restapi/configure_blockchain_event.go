@@ -20,12 +20,12 @@ import (
 	"crypto/tls"
 	"net/http"
 
+	"github.com/ethereum/go-ethereum/logger/glog"
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/alanchchen/ethermis/api/restapi/operations"
-	"github.com/alanchchen/ethermis/log"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -54,7 +54,7 @@ func configureAPI(api *operations.BlockchainEventAPI) http.Handler {
 
 	api.ServerShutdown = func() {}
 
-	api.Logger = log.Infof
+	api.Logger = glog.Infof
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }

@@ -19,15 +19,16 @@ package restapi
 import (
 	"encoding/json"
 
+	"github.com/ethereum/go-ethereum/logger/glog"
+	"github.com/go-openapi/runtime/middleware"
+
 	"github.com/alanchchen/ethermis/api/models"
 	"github.com/alanchchen/ethermis/api/restapi/operations"
-	"github.com/alanchchen/ethermis/log"
-	"github.com/go-openapi/runtime/middleware"
 )
 
 func Register(params operations.RegistrationParams) middleware.Responder {
 	raw, _ := json.MarshalIndent(params.Body, "", "\t")
-	log.Info(string(raw))
+	glog.Info(string(raw))
 	response := operations.NewRegistrationOK()
 	return response.WithPayload(&models.EventRegistrationResponse{
 		Contract: &params.Body.Contract.Name,

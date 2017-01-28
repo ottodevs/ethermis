@@ -17,15 +17,14 @@
 package api
 
 import (
-	"github.com/alanchchen/ethermis/api/restapi"
-	"github.com/alanchchen/ethermis/api/restapi/operations"
-	"github.com/alanchchen/ethermis/log"
-	"github.com/alanchchen/ethermis/utils"
+	"github.com/ethereum/go-ethereum/logger/glog"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/p2p"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/go-openapi/loads"
-	"gopkg.in/urfave/cli.v1"
+
+	"github.com/alanchchen/ethermis/api/restapi"
+	"github.com/alanchchen/ethermis/api/restapi/operations"
 )
 
 type service struct {
@@ -33,10 +32,10 @@ type service struct {
 	server  *restapi.Server
 }
 
-func New(ctx *cli.Context, serviceContext *node.ServiceContext) (node.Service, error) {
+func New(serviceContext *node.ServiceContext) (node.Service, error) {
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
-		log.Errorf("Failed to load swagger spec, err=%s", err)
+		glog.Errorf("Failed to load swagger spec, err=%s", err)
 		return nil, err
 	}
 
@@ -50,7 +49,7 @@ func New(ctx *cli.Context, serviceContext *node.ServiceContext) (node.Service, e
 
 	// validate the API descriptor, to ensure we don't have any unhandled operations
 	if err := api.Validate(); err != nil {
-		log.Errorf("Invalid API handler, err=%s", err)
+		glog.Errorf("Invalid API handler, err=%s", err)
 		return nil, err
 	}
 
@@ -58,8 +57,6 @@ func New(ctx *cli.Context, serviceContext *node.ServiceContext) (node.Service, e
 		context: serviceContext,
 		server:  server,
 	}
-
-	service.configureFlags(ctx)
 
 	return service, nil
 }
@@ -84,10 +81,4 @@ func (s *service) Stop() error {
 // network protocols to start.
 func (s *service) Protocols() []p2p.Protocol {
 	return nil
-}
-
-func (s *service) configureFlags(ctx *cli.Context) {
-	server := s.server
-	server.Host = ctx.GlobalString(utils.HostFlag.Name)
-	server.Port = ctx.GlobalInt(utils.PortFlag.Name)
 }

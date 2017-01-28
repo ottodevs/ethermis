@@ -17,11 +17,18 @@
 package ethereum
 
 import (
+	"runtime"
+
 	"github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/les"
+	"github.com/ethereum/go-ethereum/logger/glog"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/p2p"
+	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
+
+	"github.com/alanchchen/ethermis/api"
 )
 
 // Backend handles the chain database and VM
@@ -81,4 +88,35 @@ func (s *Backend) Ethereum() *eth.Ethereum {
 // Config returns the eth.Config
 func (s *Backend) Config() *eth.Config {
 	return s.config
+}
+
+func MakeFullNode(version uint, identifier string, gitCommit string) *node.Node {
+	// Create the default extradata and construct the base node
+	var clientInfo = struct {
+		Version   uint
+		Name      string
+		GoVersion string
+		Os        string
+	}{version, identifier, runtime.Version(), runtime.GOOS}
+	extra, err := rlp.EncodeToBytes(clientInfo)
+	if err != nil {
+		glog.Warning("error setting canonical miner information:", err)
+	}
+	if uint64(len(extra)) > params.MaximumExtraDataSize.Uint64() {
+		glog.Warning("error setting canonical miner information: extra exceeds", params.MaximumExtraDataSize)
+		glog.Warningf("extra: %x\n", extra)
+		extra = nil
+	}
+	stack := MakeNode(identifier, gitCommit)
+	RegisterEthService(stack, extra)
+	RegisterEthStatsService(stack, ethstatsURL)
+
+	// Add the API service
+	if err := stack.Register(func(serviceContext *node.ServiceContext) (node.Service, error) {
+		return api.New(serviceContext)
+	}); err != nil {
+		glog.Fatalf("Failed to register the API service: %v", err)
+	}
+
+	return stack
 }

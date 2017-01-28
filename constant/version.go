@@ -14,34 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Ethermis. If not, see <http://www.gnu.org/licenses/>.
 
-package utils
+package constant
 
-import (
-	"log"
-	"os"
-	"os/signal"
-
-	"github.com/ethereum/go-ethereum/logger"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/golang/glog"
+const (
+	ClientIdentifier = "Ethermis" // Client identifier to advertise over the network
+	VersionMajor     = 0          // Major version component of the current release
+	VersionMinor     = 1          // Minor version component of the current release
+	VersionPatch     = 0          // Patch version component of the current release
+	VersionMeta      = "unstable" // Version metadata to append to the version string
 )
 
-func StartNode(stack *node.Node) {
-	if err := stack.Start(); err != nil {
-		log.Fatalf("Error starting protocol stack: %v", err)
-	}
-	go func() {
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, os.Interrupt)
-		defer signal.Stop(sigc)
-		// <-sigc
-		glog.V(logger.Info).Infoln("Got interrupt, shutting down...")
-		go stack.Stop()
-		for i := 10; i > 0; i-- {
-			<-sigc
-			if i > 1 {
-				glog.V(logger.Info).Infof("Already shutting down, interrupt %d more times for panic.", i-1)
-			}
-		}
-	}()
-}
+var (
+	GitCommit     string
+	VersionString string // Combined textual representation of all the version components
+)

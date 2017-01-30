@@ -20,13 +20,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/alanchchen/ethermis/api"
-	"github.com/alanchchen/ethermis/constant"
 	"github.com/alanchchen/ethermis/ethereum"
 )
 
@@ -46,26 +44,26 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		stack = ethereum.MakeFullNode(
-			uint(constant.VersionMajor<<16|constant.VersionMinor<<8|constant.VersionPatch),
-			constant.ClientIdentifier,
-			constant.GitCommit,
-		)
+		// stack = ethereum.MakeFullNode(
+		// 	uint(constant.VersionMajor<<16|constant.VersionMinor<<8|constant.VersionPatch),
+		// 	constant.ClientIdentifier,
+		// 	constant.GitCommit,
+		// )
 
-		utils.StartNode(stack)
+		//utils.StartNode(stack)
 
 		// Add the API service
-		apiService, err := api.New(
-			api.UseController(
-				ethereum.NewController(stack),
-			),
+		apiService := api.New(
+			// api.UseController(
+			ethereum.NewController(),
+		// ),
 		)
-		if err != nil {
-			cmd.Println("failed to initialize API service, ", err)
+		if apiService == nil {
+			cmd.Println("failed to initialize API service")
 			return
 		}
-		go apiService.Start()
-		stack.Wait()
+		apiService.Start()
+		//stack.Wait()
 		apiService.Stop()
 	},
 }
@@ -91,6 +89,7 @@ func init() {
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	RootCmd.PersistentFlags().AddFlagSet(ethereum.EthereumFlags)
+	RootCmd.PersistentFlags().AddFlagSet(api.APIServiceFlags)
 }
 
 // initConfig reads in config file and ENV variables if set.

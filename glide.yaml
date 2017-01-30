@@ -22,6 +22,9 @@ import:
 - package: github.com/spf13/viper
 - package: gopkg.in/tylerb/graceful.v1
   version: ~1.2.13
-- package: github.com/go-openapi/runtime
+- package: google.golang.org/grpc
+  version: ~1.0.5
+- package: github.com/grpc-ecosystem/grpc-gateway
+  version: ~1.1.0
 - package: github.com/docker/go-units
   version: ~0.3.1

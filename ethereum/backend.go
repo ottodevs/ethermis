@@ -109,17 +109,5 @@ func MakeFullNode(version uint, identifier string, gitCommit string) *node.Node 
 	RegisterEthService(stack, extra)
 	RegisterEthStatsService(stack, ethstatsURL)
 
-	// // Add the API service
-	// if err := stack.Register(func(serviceContext *node.ServiceContext) (node.Service, error) {
-	// 	return api.New(
-	// 		api.UseServiceContext(serviceContext),
-	// 		api.UseController(
-	// 			NewController(stack),
-	// 		),
-	// 	)
-	// }); err != nil {
-	// 	glog.Fatalf("Failed to register the API service: %v", err)
-	// }
-
 	return stack
 }

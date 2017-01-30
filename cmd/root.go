@@ -20,13 +20,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/alanchchen/ethermis/constant"
-	"github.com/alanchchen/ethermis/ethereum"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/node"
-	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/alanchchen/ethermis/api"
+	"github.com/alanchchen/ethermis/constant"
+	"github.com/alanchchen/ethermis/ethereum"
 )
 
 var cfgFile string
@@ -51,9 +52,21 @@ to quickly create a Cobra application.`,
 			constant.GitCommit,
 		)
 
-		glog.Infoln("Starting", constant.ClientIdentifier)
 		utils.StartNode(stack)
+
+		// Add the API service
+		apiService, err := api.New(
+			api.UseController(
+				ethereum.NewController(stack),
+			),
+		)
+		if err != nil {
+			cmd.Println("failed to initialize API service, ", err)
+			return
+		}
+		go apiService.Start()
 		stack.Wait()
+		apiService.Stop()
 	},
 }
 
@@ -77,29 +90,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	// RootCmd.SetHelpTemplate(`{{.Name}} {{if .Flags}}[global options] {{end}}command{{if .Flags}} [command options]{{end}} [arguments...]
-
-	// VERSION:
-	//    {{.Version}}
-
-	// COMMANDS:
-	//    {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
-	//    {{end}}{{if .Flags}}
-	// GLOBAL OPTIONS:
-	//    {{range .Flags}}{{.}}
-	//    {{end}}{{end}}
-	// `)
-
-	// 	cli.CommandHelpTemplate = `{{.Name}}{{if .Subcommands}} command{{end}}{{if .Flags}} [command options]{{end}} [arguments...]
-	// {{if .Description}}{{.Description}}
-	// {{end}}{{if .Subcommands}}
-	// SUBCOMMANDS:
-	// 	{{range .Subcommands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
-	// 	{{end}}{{end}}{{if .Flags}}
-	// OPTIONS:
-	// 	{{range .Flags}}{{.}}
-	// 	{{end}}{{end}}
-	// `)
+	RootCmd.PersistentFlags().AddFlagSet(ethereum.EthereumFlags)
 }
 
 // initConfig reads in config file and ENV variables if set.

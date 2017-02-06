@@ -16,15 +16,22 @@
 
 package constant
 
-const (
-	ClientIdentifier = "Ethermis" // Client identifier to advertise over the network
-	VersionMajor     = 0          // Major version component of the current release
-	VersionMinor     = 1          // Minor version component of the current release
-	VersionPatch     = 0          // Patch version component of the current release
-	VersionMeta      = "unstable" // Version metadata to append to the version string
-)
+import "fmt"
 
 var (
-	GitCommit     string
-	VersionString string // Combined textual representation of all the version components
+	ClientIdentifier = "Ethermis" // Client identifier to advertise over the network
+	VersionMajor     = 1          // Major version component of the current release
+	VersionMinor     = 0          // Minor version component of the current release
+	VersionPatch     = 0          // Patch version component of the current release
+	VersionMeta      = "unstable" // Version metadata to append to the version string
+	GitCommit        string
+	BuildTime        string
 )
+
+func VersionString() string {
+	if GitCommit != "" {
+		return fmt.Sprintf("%v.%v.%v-%v-%v", VersionMajor, VersionMinor, VersionPatch, VersionMeta, GitCommit[:8])
+	}
+
+	return fmt.Sprintf("%v.%v.%v-%v", VersionMajor, VersionMinor, VersionPatch, VersionMeta)
+}

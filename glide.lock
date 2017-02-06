@@ -1,12 +1,10 @@
-hash: 8bde8af7828d99735bcdab1b2a7efa0cfd20bed6b9ab096bbdab16bf14afe2ce
-updated: 2017-01-28T10:03:12.247930254+08:00
+hash: e8a1779eb4601ec1b7f62322735ff89ffcd92ec79fd0350107a046e8e0723594
+updated: 2017-01-30T15:55:57.665624623+08:00
 imports:
 - name: github.com/aristanetworks/goarista
   version: b0e49c238c066506cefd63181b73b282ccd84708
   subpackages:
   - monotime
-- name: github.com/asaskevich/govalidator
-  version: fdf19785fd3558d619ef81212f5edf1d6c2a5911
 - name: github.com/docker/go-units
   version: f2d77a61e3c169b43402a0a1e84f06daf29b8190
 - name: github.com/ethereum/ethash
@@ -62,41 +60,21 @@ imports:
   - whisper/whisperv2
 - name: github.com/fsnotify/fsnotify
   version: a904159b9206978bb6d53fcc7a769e5cd726c737
-- name: github.com/go-openapi/analysis
-  version: d5a75b7d751ca3f11ad5d93cfe97405f2c3f6a47
-- name: github.com/go-openapi/errors
-  version: fc3f73a224499b047eda7191e5d22e1e9631e86f
-- name: github.com/go-openapi/jsonpointer
-  version: 779f45308c19820f1a69e9a4cd965f496e0da10f
-- name: github.com/go-openapi/jsonreference
-  version: 36d33bfe519efae5632669801b180bf1a245da3b
-- name: github.com/go-openapi/loads
-  version: 6bb6486231e079ea125c0f39994ed3d0c53399ed
+- name: github.com/golang/protobuf
+  version: 1f49d83d9aa00e6ce4fc8258c71cc7786aec968a
   subpackages:
-  - fmts
-- name: github.com/go-openapi/runtime
-  version: 3b13ebb46790d871d74a6c2450fa4b1280f90854
-  subpackages:
-  - flagext
-  - middleware
-  - middleware/denco
-  - middleware/header
-  - middleware/untyped
-  - security
-- name: github.com/go-openapi/spec
-  version: f81e0f768713035fe232cd0d44a1c56e4eef1383
-- name: github.com/go-openapi/strfmt
-  version: 0cb3db44c13bad3b3f567b762a66751972a310cc
-- name: github.com/go-openapi/swag
-  version: ccda4c1474f9391645ec012bc8a8c14012dbea3e
-- name: github.com/go-openapi/validate
-  version: 035dcd74f1f61e83debe1c22950dc53556e7e4b2
-- name: github.com/golang/glog
-  version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+  - jsonpb
+  - proto
+  - protoc-gen-go/descriptor
 - name: github.com/golang/snappy
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
-- name: github.com/gorilla/context
-  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/grpc-ecosystem/grpc-gateway
+  version: a8f25bd1ab549f8b87afd48aa9181221e9d439bb
+  subpackages:
+  - runtime
+  - runtime/internal
+  - third_party/googleapis/google/api
+  - utilities
 - name: github.com/hashicorp/golang-lru
   version: 0a025b7e63adc15a622f29b0b2c4c3848243bbf6
   subpackages:
@@ -127,12 +105,6 @@ imports:
   version: 1fa385a6f45828c83361136b45b1a21a12139493
 - name: github.com/magiconair/properties
   version: b3b15ef068fd0b17ddf408a23669f20811d194d2
-- name: github.com/mailru/easyjson
-  version: edd3ef1dab48f1cc831d78c0602a79be7a7b1a5e
-  subpackages:
-  - buffer
-  - jlexer
-  - jwriter
 - name: github.com/mitchellh/mapstructure
   version: db1efb556f84b25a0a13a04aad883943538ad2e0
 - name: github.com/pborman/uuid
@@ -141,16 +113,12 @@ imports:
   version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
 - name: github.com/pelletier/go-toml
   version: a1f048ba24490f9b0674a67e1ce995d685cddf4a
-- name: github.com/PuerkitoBio/purell
-  version: 0bcb03f4b4d0a9428594752bd2a3b9aa0a9d4bd4
-- name: github.com/PuerkitoBio/urlesc
-  version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/rcrowley/go-metrics
   version: 1f30fe9094a513ce4c700b9a54458bbb0c96996c
   subpackages:
   - exp
 - name: github.com/rjeczalik/notify
-  version: b8dab33f409f63a90858d0eff0da94ed1a692b66
+  version: 9d5aa0c3b735c3340018a4627446c3ea5a04a097
 - name: github.com/robertkrimen/otto
   version: 1c7376969459873387db43f2838ffab2aadf8010
   subpackages:
@@ -169,7 +137,7 @@ imports:
   subpackages:
   - mem
 - name: github.com/spf13/cast
-  version: 56a7ecbeb18dde53c6db4bd96b541fd9741b8d44
+  version: d1139bab1c07d5ad390a65e7305876b3c1a8370b
 - name: github.com/spf13/cobra
   version: c29ece4386f74084680e5e6d02d7b943ae630f63
 - name: github.com/spf13/jwalterweatherman
@@ -208,7 +176,11 @@ imports:
   - html
   - html/atom
   - html/charset
-  - idna
+  - http2
+  - http2/hpack
+  - internal/timeseries
+  - lex/httplex
+  - trace
   - websocket
 - name: golang.org/x/sys
   version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
@@ -233,7 +205,19 @@ imports:
   - runes
   - transform
   - unicode/norm
-  - width
+- name: google.golang.org/grpc
+  version: 708a7f9f3283aa2d4f6132d287d78683babe55c8
+  subpackages:
+  - codes
+  - credentials
+  - grpclog
+  - internal
+  - metadata
+  - naming
+  - peer
+  - stats
+  - tap
+  - transport
 - name: gopkg.in/fatih/set.v0
   version: 27c40922c40b43fe04554d8223a402af3ea333f3
 - name: gopkg.in/karalabe/cookiejar.v2

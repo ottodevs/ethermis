@@ -1,0 +1,25 @@
+syntax = "proto3";
+option go_package = "ethereum";
+
+package ethereum;
+
+import "google/api/annotations.proto";
+
+message CompiledContract {
+	string abi = 1;
+    string code = 2;
+}
+
+message DeploymentInfo {
+    string deployed_address = 1;
+    string transaction_id = 2;
+}
+
+service Ethereum {
+	rpc Deploy(CompiledContract) returns (DeploymentInfo) {
+		option (google.api.http) = {
+			post: "/v1/contract/deploy"
+            body: "*"
+		};
+	}
+}

@@ -1,84 +1,86 @@
-// Copyright 2017 The Ethermis Authors
-// This file is part of Ethermis.
-//
-// Ethermis is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Ethermis is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Ethermis. If not, see <http://www.gnu.org/licenses/>.
-
 package api
 
 import (
-	"github.com/ethereum/go-ethereum/logger/glog"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/go-openapi/loads"
+	"crypto/tls"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
 
-	"github.com/alanchchen/ethermis/api/restapi"
-	"github.com/alanchchen/ethermis/api/restapi/operations"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
+	gw "github.com/alanchchen/ethermis/api/ethereum"
+	"github.com/tylerb/graceful"
 )
 
-type service struct {
-	context *node.ServiceContext
-	server  *restapi.Server
+type Service interface {
+	Start() error
+	Stop() error
 }
 
-func New(serviceContext *node.ServiceContext) (node.Service, error) {
-	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
+func New(controller Controller) Service {
+	opts := []grpc.ServerOption{
+		grpc.Creds(credentials.NewClientTLSFromCert(demoCertPool, fmt.Sprintf("%s:%d", host, port)))}
+
+	grpcServer := grpc.NewServer(opts...)
+	gw.RegisterEthereumServer(grpcServer, controller)
+
+	mux := runtime.NewServeMux()
+	dcreds := credentials.NewTLS(&tls.Config{
+		ServerName: fmt.Sprintf("%s:%d", host, port),
+		RootCAs:    demoCertPool,
+	})
+	dopts := []grpc.DialOption{grpc.WithTransportCredentials(dcreds)}
+	err := gw.RegisterEthereumHandlerFromEndpoint(context.Background(), mux, fmt.Sprintf("%s:%d", host, port), dopts)
 	if err != nil {
-		glog.Errorf("Failed to load swagger spec, err=%s", err)
-		return nil, err
+		return nil
 	}
 
-	api := operations.NewBlockchainEventAPI(swaggerSpec)
-
-	server := restapi.NewServer(api)
-	server.EnabledListeners = []string{"http"}
-
-	server.ConfigureFlags()
-	server.ConfigureAPI()
-
-	// validate the API descriptor, to ensure we don't have any unhandled operations
-	if err := api.Validate(); err != nil {
-		glog.Errorf("Invalid API handler, err=%s", err)
-		return nil, err
+	s := &service{
+		server: &graceful.Server{
+			Timeout: 10 * time.Second,
+			Server: &http.Server{
+				Addr:    fmt.Sprintf("%s:%d", host, port),
+				Handler: grpcHandlerFunc(grpcServer, mux),
+				TLSConfig: &tls.Config{
+					Certificates: []tls.Certificate{*demoKeyPair},
+					NextProtos:   []string{"h2"},
+				},
+			},
+		},
 	}
 
-	service := &service{
-		context: serviceContext,
-		server:  server,
-	}
-
-	return service, nil
+	return s
 }
 
-func (s *service) APIs() []rpc.API {
-	return nil
+// grpcHandlerFunc returns an http.Handler that delegates to grpcServer on incoming gRPC
+// connections or otherHandler otherwise. Copied from cockroachdb.
+func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO(tamird): point to merged gRPC code rather than a PR.
+		// This is a partial recreation of gRPC's internal checks https://github.com/grpc/grpc-go/pull/514/files#diff-95e9a25b738459a2d3030e1e6fa2a718R61
+		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			otherHandler.ServeHTTP(w, r)
+		}
+	})
 }
 
-// Start implements node.Service, starting all internal goroutines needed by the
-// Ethereum protocol implementation.
-func (s *service) Start(srvr *p2p.Server) error {
-	return s.server.Serve()
+// ----------------------------------------------------------------------------
+
+type service struct {
+	server *graceful.Server
 }
 
-// Stop implements node.Service, terminating all internal goroutines used by the
-// Ethereum protocol.
+func (s *service) Start() error {
+	return s.server.ListenAndServeTLSConfig(s.server.TLSConfig)
+}
+
 func (s *service) Stop() error {
-	return s.server.Shutdown()
-}
-
-// Protocols implements node.Service, returning all the currently configured
-// network protocols to start.
-func (s *service) Protocols() []p2p.Protocol {
+	s.server.Stop(10 * time.Second)
 	return nil
 }

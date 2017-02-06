@@ -17,14 +17,20 @@
 package main
 
 import (
+	goflag "flag"
+
 	"github.com/alanchchen/ethermis/cmd"
+	"github.com/ethereum/go-ethereum/logger"
 	"github.com/ethereum/go-ethereum/logger/glog"
 )
 
 func init() {
+	glog.SetV(logger.Detail)
 	glog.SetToStderr(true)
+	goflag.CommandLine.Parse([]string{})
 }
 
 func main() {
 	cmd.Execute()
+	glog.Flush()
 }

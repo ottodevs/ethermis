@@ -31,6 +31,8 @@ import (
 )
 
 var (
+	EthereumFlags = flag.NewFlagSet("ethereum", flag.ExitOnError)
+
 	dataDir                 string
 	keyStoreDir             string
 	networkID               int
@@ -82,254 +84,255 @@ var (
 // are the same for all commands.
 
 func init() {
+
 	// General settings
-	flag.StringVar(&dataDir,
+	EthereumFlags.StringVar(&dataDir,
 		"datadir",
 		node.DefaultDataDir(),
 		"Data directory for the databases",
 	)
 
-	flag.StringVar(&keyStoreDir,
+	EthereumFlags.StringVar(&keyStoreDir,
 		"keystore",
 		"",
 		"Directory for the keystore (default = inside the datadir)",
 	)
 
-	flag.IntVar(&networkID,
+	EthereumFlags.IntVar(&networkID,
 		"networkid",
 		eth.NetworkId,
 		"Network identifier (integer, 0=Olympic (disused), 1=Frontier, 2=Morden (disused), 3=Ropsten)",
 	)
 
-	flag.StringVar(&identity,
+	EthereumFlags.StringVar(&identity,
 		"identity",
 		"",
 		"Custom node name",
 	)
 
-	flag.BoolVar(&natspecEnabled,
+	EthereumFlags.BoolVar(&natspecEnabled,
 		"natspec",
 		false,
 		"Enable NatSpec confirmation notice",
 	)
 
-	flag.BoolVar(&fastSync,
+	EthereumFlags.BoolVar(&fastSync,
 		"fast",
 		false,
 		"Enable fast syncing through state downloads",
 	)
 
-	flag.BoolVar(&lightMode,
+	EthereumFlags.BoolVar(&lightMode,
 		"light",
 		false,
 		"Enable light client mode",
 	)
 
-	flag.IntVar(&lightServ,
+	EthereumFlags.IntVar(&lightServ,
 		"lightserv",
 		0,
 		"Maximum percentage of time allowed for serving LES requests (0-90)",
 	)
 
-	flag.IntVar(&lightPeers,
+	EthereumFlags.IntVar(&lightPeers,
 		"lightpeers",
 		20,
 		"Maximum number of LES client peers",
 	)
 
-	flag.BoolVar(&lightKDF,
+	EthereumFlags.BoolVar(&lightKDF,
 		"lightkdf",
 		false,
 		"Reduce key-derivation RAM & CPU usage at some expense of KDF strength",
 	)
 
 	// Performance tuning settings
-	flag.IntVar(&cacheSize,
+	EthereumFlags.IntVar(&cacheSize,
 		"cache",
 		128,
 		"Megabytes of memory allocated to internal caching (min 16MB / database forced)",
 	)
 
-	flag.IntVar(&trieCacheNum,
+	EthereumFlags.IntVar(&trieCacheNum,
 		"trie-cache-gens",
 		int(state.MaxTrieCacheGen),
 		"Number of trie node generations to keep in memory",
 	)
 
 	// Miner settings
-	flag.BoolVar(&miningEnabled,
+	EthereumFlags.BoolVar(&miningEnabled,
 		"mine",
 		false,
 		"Enable mining",
 	)
 
-	flag.IntVar(&minerThreads,
+	EthereumFlags.IntVar(&minerThreads,
 		"minerthreads",
 		runtime.NumCPU(),
 		"Number of CPU threads to use for mining",
 	)
 
-	flag.StringVar(&targetGasLimit,
+	EthereumFlags.StringVar(&targetGasLimit,
 		"targetgaslimit",
 		params.GenesisGasLimit.String(),
 		"Target gas limit sets the artificial target gas floor for the blocks to mine",
 	)
 
-	flag.BoolVar(&autoDAG,
+	EthereumFlags.BoolVar(&autoDAG,
 		"autodag",
 		false,
 		"Enable automatic DAG pregeneration",
 	)
 
-	flag.StringVar(&etherbase,
+	EthereumFlags.StringVar(&etherbase,
 		"etherbase",
 		"",
 		"Public address for block mining rewards (default = first account created)",
 	)
 
-	flag.StringVar(&gasPrice,
+	EthereumFlags.StringVar(&gasPrice,
 		"gasprice",
 		new(big.Int).Mul(big.NewInt(20), common.Shannon).String(),
 		"Minimal gas price to accept for mining a transactions",
 	)
 
-	flag.StringVar(&extraData,
+	EthereumFlags.StringVar(&extraData,
 		"extradata",
 		"",
 		"Block extra data set by the miner (default = client version)",
 	)
 
 	// Account settings
-	flag.StringVar(&unlockedAccount,
+	EthereumFlags.StringVar(&unlockedAccount,
 		"unlock",
 		"",
 		"Comma separated list of accounts to unlock",
 	)
 
-	flag.StringVar(&passwordFile,
+	EthereumFlags.StringVar(&passwordFile,
 		"password",
 		"",
 		"Password file to use for non-inteactive password input",
 	)
 
 	// Logging and debug settings
-	flag.StringVar(&ethstatsURL,
+	EthereumFlags.StringVar(&ethstatsURL,
 		"ethstats",
 		"",
 		"Reporting URL of a ethstats service (nodename:secret@host:port)",
 	)
 
-	flag.BoolVar(&metricsEnabled,
+	EthereumFlags.BoolVar(&metricsEnabled,
 		metrics.MetricsEnabledFlag,
 		false,
 		"Enable metrics collection and reporting",
 	)
 
-	flag.BoolVar(&fakePOW,
+	EthereumFlags.BoolVar(&fakePOW,
 		"fakepow",
 		false,
 		"Disables proof-of-work verification",
 	)
 
 	// Network Settings
-	flag.IntVar(&maxPeers,
+	EthereumFlags.IntVar(&maxPeers,
 		"maxpeers",
 		25,
 		"Maximum number of network peers (network disabled if set to 0)",
 	)
 
-	flag.IntVar(&maxPendingPeers,
+	EthereumFlags.IntVar(&maxPendingPeers,
 		"maxpendpeers",
 		0,
 		"Maximum number of pending connection attempts (defaults used if set to 0)",
 	)
 
-	flag.IntVar(&p2pPort,
+	EthereumFlags.IntVar(&p2pPort,
 		"p2pport",
 		30303,
 		"P2P network listening port",
 	)
 
-	flag.StringVar(&bootNodes,
+	EthereumFlags.StringVar(&bootNodes,
 		"bootnodes",
 		"",
 		"Comma separated enode URLs for P2P discovery bootstrap",
 	)
 
-	flag.StringVar(&nodeKeyFile,
+	EthereumFlags.StringVar(&nodeKeyFile,
 		"nodekey",
 		"",
 		"P2P node key file",
 	)
 
-	flag.StringVar(&nodeKeyHex,
+	EthereumFlags.StringVar(&nodeKeyHex,
 		"nodekeyhex",
 		"",
 		"P2P node key as hex (for testing)",
 	)
 
-	flag.StringVar(&natSetting,
+	EthereumFlags.StringVar(&natSetting,
 		"nat",
 		"any",
 		"NAT port mapping mechanism (any|none|upnp|pmp|extip:<IP>)",
 	)
 
-	flag.BoolVar(&noDiscover,
+	EthereumFlags.BoolVar(&noDiscover,
 		"nodiscover",
 		false,
 		"Disables the peer discovery mechanism (manual peer addition)",
 	)
 
-	flag.BoolVar(&discoveryV5,
+	EthereumFlags.BoolVar(&discoveryV5,
 		"v5disc",
 		false,
 		"Enables the experimental RLPx V5 (Topic Discovery) mechanism",
 	)
 
-	flag.StringVar(&netRestrict,
+	EthereumFlags.StringVar(&netRestrict,
 		"netrestrict",
 		"",
 		"Restricts network communication to the given IP networks (CIDR masks)",
 	)
 
-	flag.StringVar(&solcPath,
+	EthereumFlags.StringVar(&solcPath,
 		"solc",
 		"solc",
 		"Solidity compiler command to be used",
 	)
 
 	// Gas price oracle settings
-	flag.StringVar(&gpoMinGasPrice,
+	EthereumFlags.StringVar(&gpoMinGasPrice,
 		"gpomin",
 		new(big.Int).Mul(big.NewInt(20), common.Shannon).String(),
 		"Minimum suggested gas price",
 	)
 
-	flag.StringVar(&gpoMaxGasPrice,
+	EthereumFlags.StringVar(&gpoMaxGasPrice,
 		"gpomax",
 		new(big.Int).Mul(big.NewInt(500), common.Shannon).String(),
 		"Maximum suggested gas price",
 	)
 
-	flag.IntVar(&gpoFullBlockRatio,
+	EthereumFlags.IntVar(&gpoFullBlockRatio,
 		"gpofull",
 		80,
 		"Full block threshold for gas price calculation (%)",
 	)
 
-	flag.IntVar(&gpoBaseStepDown,
+	EthereumFlags.IntVar(&gpoBaseStepDown,
 		"gpobasedown",
 		10,
 		"Suggested gas price base step down ratio (1/1000)",
 	)
 
-	flag.IntVar(&gpoBaseStepUp,
+	EthereumFlags.IntVar(&gpoBaseStepUp,
 		"gpobaseup",
 		100,
 		"Suggested gas price base step up ratio (1/1000)",
 	)
 
-	flag.IntVar(&gpoBaseCorrectionFactor,
+	EthereumFlags.IntVar(&gpoBaseCorrectionFactor,
 		"gpobasecf",
 		110,
 		"Suggested gas price base correction factor (%)",
